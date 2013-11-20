@@ -42,8 +42,8 @@
     self = [super init];
     if (self) {
         
-        NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024
-                                                             diskCapacity:20 * 1024 * 1024
+        NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 //4MB
+                                                             diskCapacity:20 * 1024 * 1024 //20MB
                                                                  diskPath:nil];
         [NSURLCache setSharedURLCache:URLCache];
     }
