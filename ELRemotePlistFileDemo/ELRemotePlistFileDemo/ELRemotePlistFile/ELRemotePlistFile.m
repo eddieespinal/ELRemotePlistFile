@@ -50,90 +50,17 @@
     return self;
 }
 
-- (void)downloadRemotePlistFileWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
+- (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
 {
-    //Let's check if we have a cached plist file first and return it if we have one.
-    NSDictionary *cacheDictionary = [ELRemotePlistFile readPlistFromDiskWithFilename:filename];
-    if ([cacheDictionary count] > 0)
-    {
-        if (completionBlock) {
-            completionBlock(cacheDictionary);
-        }
-        
-        return;
-    }
-    
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
-    NSURLResponse *returnedResponse = nil;
-    NSError *returnedError = nil;
-    NSData *requestData  = [NSURLConnection sendSynchronousRequest:request returningResponse:&returnedResponse error:&returnedError];
-    
-    // Check if no error, then parse data
-    if (returnedError == nil)
-    {
-        // Parse response into a dictionary
-        NSPropertyListFormat format;
-        NSString *errorStr = nil;
-        NSDictionary *dictionary = [NSPropertyListSerialization propertyListFromData:requestData
-                                                                    mutabilityOption:NSPropertyListImmutable
-                                                                              format:&format
-                                                                    errorDescription:&errorStr];
-        if (errorStr == nil)
-        {
-            @try
-            {
-                if (completionBlock)
-                {
-                    completionBlock(dictionary);
-                    
-                    if (cache)
-                    {
-                        if (filename)
-                        {
-                            [ELRemotePlistFile writePlistFileToDisk:dictionary filename:filename];
-                        }
-                    }
-                }
-                
-            }
-            @catch (NSException *e)
-            {
-                // Error retrieving the key
-                NSError *error = [NSError errorWithDomain:e.reason code:0 userInfo:nil];
-                if (failedBlock)
-                {
-                    failedBlock(error);
-                }
-            }
-        }
-        else
-        {
-            // Error with parsing data into dictionary
-            NSError *error = [NSError errorWithDomain:@"Error parsing data into dictionary" code:0 userInfo:nil];
-            if (failedBlock)
-            {
-                failedBlock(error);
-            }
-        }
-        
-    }
-    else
-    {
-        if (failedBlock)
-        {
-            failedBlock(returnedError);
-        }
-    }
-}
 
-- (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
-{
+    NSString *filename = [[[url absoluteString] lastPathComponent] stringByDeletingPathExtension];
+    
     //Let's check if we have a cached plist file first and return it if we have one.
-    NSDictionary *cacheDictionary = [ELRemotePlistFile readPlistFromDiskWithFilename:filename];
-    if ([cacheDictionary count] > 0)
+    NSDictionary *cachedDictionary = [ELRemotePlistFile readPlistFromDiskWithFilename:filename];
+    if (cachedDictionary)
     {
         if (completionBlock) {
-            completionBlock(cacheDictionary);
+            completionBlock(cachedDictionary);
         }
         
         return;
@@ -162,10 +89,7 @@
                         
                         if (cache)
                         {
-                            if (filename)
-                            {
-                                [ELRemotePlistFile writePlistFileToDisk:dictionary filename:filename];
-                            }
+                            [ELRemotePlistFile writePlistFileToDisk:dictionary filename:filename];
                         }
                     }
                     
@@ -214,9 +138,16 @@
     return cacheStringPath;
 }
 
++ (NSString *)cachePathWithFilename:(NSString *)filename
+{
+    NSString *filePath = [[ELRemotePlistFile cacheDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", filename]];
+    
+    return filePath;
+}
+
 + (NSDictionary *)readPlistFromDiskWithFilename:(NSString *)filename
 {
-    NSString *plistPath = [[ELRemotePlistFile cacheDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", filename]];
+    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:filename];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:plistPath])
@@ -232,7 +163,7 @@
 {
     NSAssert(filename != nil, @"Filename can't be nil");
     
-    NSString *plistPath = [[ELRemotePlistFile cacheDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", filename]];
+    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:filename];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:plistPath])
@@ -245,7 +176,7 @@
 
 + (void)removePlistFromDiskWithFilename:(NSString *)filename
 {
-    NSString *plistPath = [[ELRemotePlistFile cacheDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", filename]];
+    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:filename];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:plistPath])

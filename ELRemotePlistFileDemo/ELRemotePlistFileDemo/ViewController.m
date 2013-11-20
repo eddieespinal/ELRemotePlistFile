@@ -24,7 +24,6 @@
     
     [[ELRemotePlistFile sharedInstance] downloadRemotePlistFileAsyncWithURL:[NSURL URLWithString:urlString]
                                                                       cache:YES
-                                                                   filename:@"manifest_filename"
                                                             completionBlock:^(NSDictionary *response) {
                                                                       //Handle the response dictionary here
                                                                       NSLog(@"%@", response);

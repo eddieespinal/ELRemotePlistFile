@@ -32,8 +32,6 @@
 
 + (void)removePlistFromDiskWithFilename:(NSString *)filename;
 
-- (void)downloadRemotePlistFileWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
-
-- (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
+- (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
 
 @end
