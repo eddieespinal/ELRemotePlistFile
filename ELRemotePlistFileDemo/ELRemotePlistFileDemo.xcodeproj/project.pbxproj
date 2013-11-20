@@ -21,7 +21,7 @@
 		0979E537183C112200E963E1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0979E519183C112200E963E1 /* UIKit.framework */; };
 		0979E53F183C112300E963E1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0979E53D183C112300E963E1 /* InfoPlist.strings */; };
 		0979E541183C112300E963E1 /* ELRemotePlistFileDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0979E540183C112300E963E1 /* ELRemotePlistFileDemoTests.m */; };
-		0979E54D183C117400E963E1 /* ELRemotePlistFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 0979E54C183C117400E963E1 /* ELRemotePlistFile.m */; };
+		0979E551183D057300E963E1 /* ELRemotePlistFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 0979E550183D057300E963E1 /* ELRemotePlistFile.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,8 +54,8 @@
 		0979E53C183C112300E963E1 /* ELRemotePlistFileDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ELRemotePlistFileDemoTests-Info.plist"; sourceTree = "<group>"; };
 		0979E53E183C112300E963E1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0979E540183C112300E963E1 /* ELRemotePlistFileDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ELRemotePlistFileDemoTests.m; sourceTree = "<group>"; };
-		0979E54B183C117400E963E1 /* ELRemotePlistFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELRemotePlistFile.h; sourceTree = "<group>"; };
-		0979E54C183C117400E963E1 /* ELRemotePlistFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELRemotePlistFile.m; sourceTree = "<group>"; };
+		0979E54F183D057300E963E1 /* ELRemotePlistFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ELRemotePlistFile.h; sourceTree = "<group>"; };
+		0979E550183D057300E963E1 /* ELRemotePlistFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ELRemotePlistFile.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,7 +115,7 @@
 		0979E51B183C112200E963E1 /* ELRemotePlistFileDemo */ = {
 			isa = PBXGroup;
 			children = (
-				0979E54A183C114B00E963E1 /* ELRemotePlistFile */,
+				0979E54E183D057300E963E1 /* ELRemotePlistFile */,
 				0979E524183C112200E963E1 /* AppDelegate.h */,
 				0979E525183C112200E963E1 /* AppDelegate.m */,
 				0979E527183C112200E963E1 /* Main.storyboard */,
@@ -156,13 +156,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		0979E54A183C114B00E963E1 /* ELRemotePlistFile */ = {
+		0979E54E183D057300E963E1 /* ELRemotePlistFile */ = {
 			isa = PBXGroup;
 			children = (
-				0979E54B183C117400E963E1 /* ELRemotePlistFile.h */,
-				0979E54C183C117400E963E1 /* ELRemotePlistFile.m */,
+				0979E54F183D057300E963E1 /* ELRemotePlistFile.h */,
+				0979E550183D057300E963E1 /* ELRemotePlistFile.m */,
 			);
-			path = ELRemotePlistFile;
+			name = ELRemotePlistFile;
+			path = ../../ELRemotePlistFile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -265,7 +266,7 @@
 				0979E52C183C112200E963E1 /* ViewController.m in Sources */,
 				0979E526183C112200E963E1 /* AppDelegate.m in Sources */,
 				0979E522183C112200E963E1 /* main.m in Sources */,
-				0979E54D183C117400E963E1 /* ELRemotePlistFile.m in Sources */,
+				0979E551183D057300E963E1 /* ELRemotePlistFile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,6 +475,7 @@
 				0979E546183C112300E963E1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0979E547183C112300E963E1 /* Build configuration list for PBXNativeTarget "ELRemotePlistFileDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -482,6 +484,7 @@
 				0979E549183C112300E963E1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
