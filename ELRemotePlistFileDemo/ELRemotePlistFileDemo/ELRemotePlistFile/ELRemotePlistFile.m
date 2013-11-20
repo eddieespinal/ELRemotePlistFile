@@ -31,7 +31,7 @@
     static ELRemotePlistFile *_sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _sharedInstance = [[self alloc] init];
+        _sharedInstance = [[ELRemotePlistFile alloc] init];
     });
     
     return _sharedInstance;
@@ -200,6 +200,12 @@
     
 }
 
+- (void)removeAllCache
+{
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+}
+
 + (NSString *)cacheDirectory
 {
     NSArray *cachePathArray = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -235,6 +241,17 @@
     }
     
     [dictionary writeToFile:plistPath atomically:YES];
+}
+
++ (void)removePlistFromDiskWithFilename:(NSString *)filename
+{
+    NSString *plistPath = [[ELRemotePlistFile cacheDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", filename]];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if ([fileManager fileExistsAtPath:plistPath])
+    {
+        [fileManager removeItemAtPath:plistPath error:nil];
+    }
 }
 
 
