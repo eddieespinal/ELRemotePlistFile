@@ -20,10 +20,14 @@
     [super viewDidLoad];
 
     
-    NSString *urlString = @"https://www.dropbox.com/s/he1wl3i56hi/Manifest.plist?dl=1";
+    NSString *urlString = @"https://www.dropbox.com/s/1iahe1wl3i56hi1/Manifest.plist?dl=1";
     
-    [ELRemotePlistFile downloadRemotePlistFileWithURL:[NSURL URLWithString:urlString]
+    [ELRemotePlistFile downloadRemotePlistFileAsyncWithURL:[NSURL URLWithString:urlString]
+                                                     cache:YES
+                                                  filename:@"manifest_filename"
                                       completionBlock:^(NSDictionary *response) {
+                                          
+                                          //Handle the response dictionary here
                                           NSLog(@"%@", response);
                                       }
                                                failed:^(NSError *error) {

@@ -26,8 +26,9 @@
 
 @interface ELRemotePlistFile : NSObject
 
-+ (void)downloadRemotePlistFileWithURL:(NSURL *)url completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
++ (void)downloadRemotePlistFileWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
 
-+ (NSString *)cacheDirectory;
++ (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
+
 
 @end
