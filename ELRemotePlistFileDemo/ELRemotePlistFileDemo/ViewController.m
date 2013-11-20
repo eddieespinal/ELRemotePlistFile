@@ -22,6 +22,8 @@
     
     NSString *urlString = @"https://www.dropbox.com/s/1iahe1wl3i56hi1/Manifest.plist?dl=1";
     
+    [ELRemotePlistFile sharedInstance];
+    
     [ELRemotePlistFile downloadRemotePlistFileAsyncWithURL:[NSURL URLWithString:urlString]
                                                      cache:YES
                                                   filename:@"manifest_filename"

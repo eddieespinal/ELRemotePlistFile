@@ -31,7 +31,7 @@
     static ELRemotePlistFile *_sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _sharedInstance = [[ELRemotePlistFile alloc] init];
+        _sharedInstance = [[self alloc] init];
     });
     
     return _sharedInstance;
