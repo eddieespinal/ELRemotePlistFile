@@ -19,8 +19,7 @@
 {
     [super viewDidLoad];
 
-    
-    NSString *urlString = @"https://www.dropbox.com/s/1iahe1wl3i56hi1/Manifest.plist?dl=1";
+    NSString *urlString = @"http://radiomusicapp.com/Manifest.plist";
     
     [[ELRemotePlistFile sharedInstance] downloadRemotePlistFileAsyncWithURL:[NSURL URLWithString:urlString]
                                                                       cache:YES

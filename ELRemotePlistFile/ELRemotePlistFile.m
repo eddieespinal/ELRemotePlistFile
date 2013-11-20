@@ -55,76 +55,126 @@
 
     NSString *filename = [ELRemotePlistFile filenameFromURLString:[url absoluteString]];
     
-    //Let's check if we have a cached plist file first and return it if we have one.
-    NSDictionary *cachedDictionary = [ELRemotePlistFile readPlistFromDiskWithURLString:[url absoluteString]];
-    if (cachedDictionary)
-    {
-        if (completionBlock) {
-            completionBlock(cachedDictionary);
-        }
+    if ([ELRemotePlistFile isNewerFileOnServerWithURL:url]) {
+        NSLog(@"Remote file was modified or is newer, download it");
         
-        return;
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError)
+         {
+             // Check if no error, then parse data
+             if (connectionError == nil)
+             {
+                 
+                 // Parse response into a dictionary
+                 NSPropertyListFormat format;
+                 NSString *errorStr = nil;
+                 NSDictionary *dictionary = [NSPropertyListSerialization propertyListFromData:data
+                                                                             mutabilityOption:NSPropertyListImmutable
+                                                                                       format:&format
+                                                                             errorDescription:&errorStr];
+                 if (errorStr == nil)
+                 {
+                     @try
+                     {
+                         if (completionBlock)
+                         {
+                             completionBlock(dictionary);
+                             
+                             if (cache)
+                             {
+                                 [ELRemotePlistFile writePlistFileToDisk:dictionary filename:filename];
+                             }
+                         }
+                         
+                     }
+                     @catch (NSException *e)
+                     {
+                         // Error retrieving the key
+                         NSError *error = [NSError errorWithDomain:e.reason code:0 userInfo:nil];
+                         if (failedBlock) {
+                             failedBlock(error);
+                         }
+                     }
+                 }
+                 else
+                 {
+                     // Error with parsing data into dictionary
+                     NSError *error = [NSError errorWithDomain:@"Error parsing data into dictionary" code:0 userInfo:nil];
+                     if (failedBlock)
+                     {
+                         failedBlock(error);
+                     }
+                 }
+             }
+             else
+             {
+                 if (failedBlock)
+                 {
+                     failedBlock(connectionError);
+                 }
+             }
+         }];
+
+    } else {
+        //Let's check if we have a cached plist file first and return it if we have one.
+        NSDictionary *cachedDictionary = [ELRemotePlistFile readPlistFromDiskWithURLString:[url absoluteString]];
+        if (cachedDictionary)
+        {
+            if (completionBlock) {
+                completionBlock(cachedDictionary);
+            }
+            
+            return;
+        }
     }
 
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError)
-    {
-        // Check if no error, then parse data
-        if (connectionError == nil)
-        {
-            // Parse response into a dictionary
-            NSPropertyListFormat format;
-            NSString *errorStr = nil;
-            NSDictionary *dictionary = [NSPropertyListSerialization propertyListFromData:data
-                                                                        mutabilityOption:NSPropertyListImmutable
-                                                                                  format:&format
-                                                                        errorDescription:&errorStr];
-            if (errorStr == nil)
-            {
-                @try
-                {
-                    if (completionBlock)
-                    {
-                        completionBlock(dictionary);
-                        
-                        if (cache)
-                        {
-                            [ELRemotePlistFile writePlistFileToDisk:dictionary filename:filename];
-                        }
-                    }
-                    
-                }
-                @catch (NSException *e)
-                {
-                    // Error retrieving the key
-                    NSError *error = [NSError errorWithDomain:e.reason code:0 userInfo:nil];
-                    if (failedBlock) {
-                        failedBlock(error);
-                    }
-                }
-            }
-            else
-            {
-                // Error with parsing data into dictionary
-                NSError *error = [NSError errorWithDomain:@"Error parsing data into dictionary" code:0 userInfo:nil];
-                if (failedBlock)
-                {
-                    failedBlock(error);
-                }
-            }
-        }
-        else
-        {
-            if (failedBlock)
-            {
-                failedBlock(connectionError);
-            }
-        }
-    }];
     
 }
 
-- (void)removeAllCache
++ (BOOL)isNewerFileOnServerWithURL:(NSURL *)url
+{
+    // create a HTTP request to get the file information from the web server
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+    [request setHTTPMethod:@"HEAD"];
+    
+    NSHTTPURLResponse* response;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+    
+    // get the last modified info from the HTTP header
+    NSString* httpLastModified = nil;
+    if ([response respondsToSelector:@selector(allHeaderFields)])
+    {
+        httpLastModified = [[response allHeaderFields]
+                            objectForKey:@"Last-Modified"];
+    }
+    
+    // setup a date formatter to query the server file's modified date
+    NSDateFormatter* df = [[NSDateFormatter alloc] init];
+    df.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss 'GMT'";
+    df.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    df.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    
+    // get the file attributes to retrieve the local file's modified date
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:[ELRemotePlistFile filenameFromURLString:[url absoluteString]]];
+    NSDictionary* fileAttributes = [fileManager attributesOfItemAtPath:plistPath error:nil];
+    
+    // test if the server file's date is later than the local file's date
+    NSDate* serverFileDate = [df dateFromString:httpLastModified];
+    NSDate* localFileDate = [fileAttributes fileModificationDate];
+
+    //If local file doesn't exist, download it
+    if(localFileDate==nil){
+        return YES;
+    }
+    
+    BOOL isNewer = ([localFileDate laterDate:serverFileDate] == serverFileDate);
+    
+    return isNewer;
+}
+
++ (void)removeAllCache
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
     
