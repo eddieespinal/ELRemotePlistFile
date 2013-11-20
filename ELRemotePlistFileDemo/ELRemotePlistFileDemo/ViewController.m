@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "ELRemotePlistFile.h"
 
 @interface ViewController ()
 
@@ -17,7 +18,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+
+    
+    NSString *urlString = @"https://www.dropbox.com/s/he1wl3i56hi/Manifest.plist?dl=1";
+    
+    [ELRemotePlistFile downloadRemotePlistFileWithURL:[NSURL URLWithString:urlString]
+                                      completionBlock:^(NSDictionary *response) {
+                                          NSLog(@"%@", response);
+                                      }
+                                               failed:^(NSError *error) {
+                                                   NSLog(@"%@", error);
+                                               }];
 }
 
 - (void)didReceiveMemoryWarning
