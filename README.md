@@ -11,7 +11,6 @@ A helper class to download plist file hosted on a remote server.
     
     [[ELRemotePlistFile sharedInstance] downloadRemotePlistFileAsyncWithURL:[NSURL URLWithString:urlString]
                                                                       cache:YES
-                                                                   filename:@"manifest_filename"
                                                             completionBlock:^(NSDictionary *response) {
                                                                       //Handle the response dictionary here
                                                                       NSLog(@"%@", response);
