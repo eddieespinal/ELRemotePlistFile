@@ -53,10 +53,10 @@
 - (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
 {
 
-    NSString *filename = [[[url absoluteString] lastPathComponent] stringByDeletingPathExtension];
+    NSString *filename = [ELRemotePlistFile filenameFromURLString:[url absoluteString]];
     
     //Let's check if we have a cached plist file first and return it if we have one.
-    NSDictionary *cachedDictionary = [ELRemotePlistFile readPlistFromDiskWithFilename:filename];
+    NSDictionary *cachedDictionary = [ELRemotePlistFile readPlistFromDiskWithURLString:[url absoluteString]];
     if (cachedDictionary)
     {
         if (completionBlock) {
@@ -130,6 +130,11 @@
     
 }
 
++ (NSString *)filenameFromURLString:(NSString *)urlString
+{
+    return [[urlString lastPathComponent] stringByDeletingPathExtension];
+}
+
 + (NSString *)cacheDirectory
 {
     NSArray *cachePathArray = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -145,9 +150,9 @@
     return filePath;
 }
 
-+ (NSDictionary *)readPlistFromDiskWithFilename:(NSString *)filename
++ (NSDictionary *)readPlistFromDiskWithURLString:(NSString *)urlString
 {
-    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:filename];
+    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:[ELRemotePlistFile filenameFromURLString:urlString]];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:plistPath])
@@ -174,9 +179,9 @@
     [dictionary writeToFile:plistPath atomically:YES];
 }
 
-+ (void)removePlistFromDiskWithFilename:(NSString *)filename
++ (void)removePlistFromDiskWithURLString:(NSString *)urlString
 {
-    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:filename];
+    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:[ELRemotePlistFile filenameFromURLString:urlString]];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:plistPath])

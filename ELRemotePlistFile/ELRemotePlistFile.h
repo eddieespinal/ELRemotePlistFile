@@ -28,9 +28,9 @@
 
 + (instancetype)sharedInstance;
 
-+ (NSDictionary *)readPlistFromDiskWithFilename:(NSString *)filename;
++ (NSDictionary *)readPlistFromDiskWithURLString:(NSString *)urlString;
 
-+ (void)removePlistFromDiskWithFilename:(NSString *)filename;
++ (void)removePlistFromDiskWithURLString:(NSString *)urlString;
 
 - (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
 
