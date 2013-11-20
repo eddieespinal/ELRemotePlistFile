@@ -50,7 +50,7 @@
     return self;
 }
 
-+ (void)downloadRemotePlistFileWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
+- (void)downloadRemotePlistFileWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
 {
     //Let's check if we have a cached plist file first and return it if we have one.
     NSDictionary *cacheDictionary = [ELRemotePlistFile readPlistFromDiskWithFilename:filename];
@@ -126,7 +126,7 @@
     }
 }
 
-+ (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
+- (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache filename:(NSString *)filename completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
 {
     //Let's check if we have a cached plist file first and return it if we have one.
     NSDictionary *cacheDictionary = [ELRemotePlistFile readPlistFromDiskWithFilename:filename];
