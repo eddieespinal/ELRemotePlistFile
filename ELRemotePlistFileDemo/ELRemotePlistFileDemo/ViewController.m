@@ -30,6 +30,11 @@
                                                                      failed:^(NSError *error) {
                                                                          NSLog(@"%@", error);
                                                                      }];
+    
+    //Using deserializeDataWithString & stringFromLocalPlistFileWithURLString methods
+    id data = [ELRemotePlistFile deserializeDataWithString:[ELRemotePlistFile stringFromLocalPlistFileWithURLString:urlString]];
+    NSLog(@"%@", data);
+    
 }
 
 - (void)didReceiveMemoryWarning
