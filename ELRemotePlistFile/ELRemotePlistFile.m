@@ -43,8 +43,8 @@
     NSString *filename = [ELRemotePlistFile filenameFromURLString:[url absoluteString]];
     
     if ([ELRemotePlistFile isNewerFileOnServerWithURL:url]) {
-        NSLog(@"Remote file was modified or is newer, download it");
         
+        //Remote file was modified or is newer, download it.
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:60.0];
         [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError)
          {
@@ -161,12 +161,6 @@
     return isNewer;
 }
 
-+ (void)removeAllCache
-{
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
-    
-}
-
 + (NSString *)filenameFromURLString:(NSString *)urlString
 {
     return [[urlString lastPathComponent] stringByDeletingPathExtension];
@@ -199,6 +193,20 @@
     }
     
     return [NSDictionary dictionaryWithContentsOfFile:plistPath];
+}
+
++ (NSString *)stringFromLocalPlistFileWithURLString:(NSString *)urlString
+{
+    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:[ELRemotePlistFile filenameFromURLString:urlString]];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:plistPath])
+    {
+        //File doesn't exist
+        return nil;
+    }
+    
+    return [NSString stringWithContentsOfFile:plistPath encoding:NSUTF8StringEncoding error:nil];
 }
 
 + (void)writePlistFileToDisk:(NSDictionary *)dictionary filename:(NSString *)filename
