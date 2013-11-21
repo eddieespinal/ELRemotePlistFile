@@ -28,12 +28,14 @@
 
 + (instancetype)sharedInstance;
 
+- (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
+
 + (NSDictionary *)readPlistFromDiskWithURLString:(NSString *)urlString;
 
 + (NSString *)stringFromLocalPlistFileWithURLString:(NSString *)urlString;
 
 + (void)removePlistFromDiskWithURLString:(NSString *)urlString;
 
-- (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
++ (id)deserializeDataWithString:(NSString *)string;
 
 @end

@@ -242,5 +242,20 @@
     }
 }
 
++ (id)deserializeDataWithString:(NSString *)string
+{
+    id object = nil;
+    
+    if (string)
+    {
+        //attempt to deserialise data as a property list
+        NSPropertyListFormat format;
+        NSPropertyListReadOptions options = NSPropertyListImmutable;
+        object = [NSPropertyListSerialization propertyListWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:options format:&format error:nil];
+    }
+
+    return object;
+}
+
 
 @end
