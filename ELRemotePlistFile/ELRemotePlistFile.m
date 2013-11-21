@@ -37,19 +37,6 @@
     return _sharedInstance;
 }
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        
-        NSURLCache *URLCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 //4MB
-                                                             diskCapacity:20 * 1024 * 1024 //20MB
-                                                                 diskPath:nil];
-        [NSURLCache setSharedURLCache:URLCache];
-    }
-    return self;
-}
-
 - (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
 {
 
@@ -58,7 +45,7 @@
     if ([ELRemotePlistFile isNewerFileOnServerWithURL:url]) {
         NSLog(@"Remote file was modified or is newer, download it");
         
-        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:60.0];
         [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError)
          {
              // Check if no error, then parse data
@@ -227,6 +214,13 @@
     }
     
     [dictionary writeToFile:plistPath atomically:YES];
+    
+    // reset the file's modification date
+    NSError *error = nil;
+	NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[NSDate date], NSFileModificationDate, nil];
+	if (![[NSFileManager defaultManager] setAttributes:dict ofItemAtPath:plistPath error:&error]) {
+		NSLog(@"Error");
+	}
 }
 
 + (void)removePlistFromDiskWithURLString:(NSString *)urlString
