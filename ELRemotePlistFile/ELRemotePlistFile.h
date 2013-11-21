@@ -30,11 +30,11 @@
 
 - (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock;
 
-+ (NSDictionary *)readPlistFromDiskWithURLString:(NSString *)urlString;
+- (NSDictionary *)readPlistFromDiskWithURLString:(NSString *)urlString;
 
-+ (NSString *)stringFromLocalPlistFileWithURLString:(NSString *)urlString;
+- (NSString *)stringFromLocalPlistFileWithURLString:(NSString *)urlString;
 
-+ (void)removePlistFromDiskWithURLString:(NSString *)urlString;
+- (void)removePlistFromDiskWithURLString:(NSString *)urlString;
 
 + (id)deserializeDataWithString:(NSString *)string;
 

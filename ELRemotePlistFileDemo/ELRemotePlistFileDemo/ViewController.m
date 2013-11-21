@@ -32,8 +32,8 @@
                                                                      }];
     
     //Using deserializeDataWithString & stringFromLocalPlistFileWithURLString methods
-    id data = [ELRemotePlistFile deserializeDataWithString:[ELRemotePlistFile stringFromLocalPlistFileWithURLString:urlString]];
-    NSLog(@"%@", data);
+    id data = [ELRemotePlistFile deserializeDataWithString:[[ELRemotePlistFile sharedInstance] stringFromLocalPlistFileWithURLString:urlString]];
+    NSLog(@"deserializeDataWithString: %@", data);
     
 }
 

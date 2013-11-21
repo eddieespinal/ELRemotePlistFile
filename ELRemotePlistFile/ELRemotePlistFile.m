@@ -24,6 +24,16 @@
 
 #import "ELRemotePlistFile.h"
 
+@interface ELRemotePlistFile ()
+
+- (BOOL)isNewerFileOnServerWithURL:(NSURL *)url;
+- (void)writePlistFileToDisk:(NSDictionary *)dictionary filename:(NSString *)filename;
+- (NSString *)cachePathWithFilename:(NSString *)filename;
+- (NSString *)cacheDirectory;
+- (NSString *)filenameFromURLString:(NSString *)urlString;
+
+@end
+
 @implementation ELRemotePlistFile
 
 + (instancetype)sharedInstance
@@ -40,9 +50,9 @@
 - (void)downloadRemotePlistFileAsyncWithURL:(NSURL *)url cache:(BOOL)cache completionBlock:(void (^)(NSDictionary *response))completionBlock failed:(void (^)(NSError *error))failedBlock
 {
 
-    NSString *filename = [ELRemotePlistFile filenameFromURLString:[url absoluteString]];
+    NSString *filename = [self filenameFromURLString:[url absoluteString]];
     
-    if ([ELRemotePlistFile isNewerFileOnServerWithURL:url]) {
+    if ([self isNewerFileOnServerWithURL:url]) {
         
         //Remote file was modified or is newer, download it.
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:60.0];
@@ -69,7 +79,7 @@
                              
                              if (cache)
                              {
-                                 [ELRemotePlistFile writePlistFileToDisk:dictionary filename:filename];
+                                 [self writePlistFileToDisk:dictionary filename:filename];
                              }
                          }
                          
@@ -104,7 +114,7 @@
 
     } else {
         //Let's check if we have a cached plist file first and return it if we have one.
-        NSDictionary *cachedDictionary = [ELRemotePlistFile readPlistFromDiskWithURLString:[url absoluteString]];
+        NSDictionary *cachedDictionary = [self readPlistFromDiskWithURLString:[url absoluteString]];
         if (cachedDictionary)
         {
             if (completionBlock) {
@@ -118,7 +128,7 @@
     
 }
 
-+ (BOOL)isNewerFileOnServerWithURL:(NSURL *)url
+- (BOOL)isNewerFileOnServerWithURL:(NSURL *)url
 {
     // create a HTTP request to get the file information from the web server
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
@@ -144,7 +154,7 @@
     // get the file attributes to retrieve the local file's modified date
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:[ELRemotePlistFile filenameFromURLString:[url absoluteString]]];
+    NSString *plistPath = [self cachePathWithFilename:[self filenameFromURLString:[url absoluteString]]];
     NSDictionary* fileAttributes = [fileManager attributesOfItemAtPath:plistPath error:nil];
     
     // test if the server file's date is later than the local file's date
@@ -161,12 +171,12 @@
     return isNewer;
 }
 
-+ (NSString *)filenameFromURLString:(NSString *)urlString
+- (NSString *)filenameFromURLString:(NSString *)urlString
 {
     return [[urlString lastPathComponent] stringByDeletingPathExtension];
 }
 
-+ (NSString *)cacheDirectory
+- (NSString *)cacheDirectory
 {
     NSArray *cachePathArray = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cacheStringPath = [cachePathArray lastObject];
@@ -174,16 +184,16 @@
     return cacheStringPath;
 }
 
-+ (NSString *)cachePathWithFilename:(NSString *)filename
+- (NSString *)cachePathWithFilename:(NSString *)filename
 {
-    NSString *filePath = [[ELRemotePlistFile cacheDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", filename]];
+    NSString *filePath = [[self cacheDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", filename]];
     
     return filePath;
 }
 
-+ (NSDictionary *)readPlistFromDiskWithURLString:(NSString *)urlString
+- (NSDictionary *)readPlistFromDiskWithURLString:(NSString *)urlString
 {
-    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:[ELRemotePlistFile filenameFromURLString:urlString]];
+    NSString *plistPath = [self cachePathWithFilename:[self filenameFromURLString:urlString]];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:plistPath])
@@ -195,9 +205,9 @@
     return [NSDictionary dictionaryWithContentsOfFile:plistPath];
 }
 
-+ (NSString *)stringFromLocalPlistFileWithURLString:(NSString *)urlString
+- (NSString *)stringFromLocalPlistFileWithURLString:(NSString *)urlString
 {
-    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:[ELRemotePlistFile filenameFromURLString:urlString]];
+    NSString *plistPath = [self cachePathWithFilename:[self filenameFromURLString:urlString]];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:plistPath])
@@ -209,11 +219,11 @@
     return [NSString stringWithContentsOfFile:plistPath encoding:NSUTF8StringEncoding error:nil];
 }
 
-+ (void)writePlistFileToDisk:(NSDictionary *)dictionary filename:(NSString *)filename
+- (void)writePlistFileToDisk:(NSDictionary *)dictionary filename:(NSString *)filename
 {
     NSAssert(filename != nil, @"Filename can't be nil");
     
-    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:filename];
+    NSString *plistPath = [self cachePathWithFilename:filename];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:plistPath])
@@ -231,9 +241,9 @@
 	}
 }
 
-+ (void)removePlistFromDiskWithURLString:(NSString *)urlString
+- (void)removePlistFromDiskWithURLString:(NSString *)urlString
 {
-    NSString *plistPath = [ELRemotePlistFile cachePathWithFilename:[ELRemotePlistFile filenameFromURLString:urlString]];
+    NSString *plistPath = [self cachePathWithFilename:[self filenameFromURLString:urlString]];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:plistPath])
