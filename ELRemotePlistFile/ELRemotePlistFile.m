@@ -250,7 +250,7 @@
     {
         //attempt to deserialise data as a property list
         NSPropertyListFormat format;
-        NSPropertyListReadOptions options = NSPropertyListMutableContainersAndLeaves;
+        NSPropertyListReadOptions options = NSPropertyListImmutable;
         object = [NSPropertyListSerialization propertyListWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:options format:&format error:nil];
     }
 
